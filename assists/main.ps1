@@ -11,30 +11,24 @@
 
 $script:FountAssistInstalled = $false
 
-function Set-FountAssist {
-	param (
-		$FountUsername,
-		$AssistCharname
-	)
+function Set-FountAssist(
+	$FountUsername,
+	$AssistCharname
+) {
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
-	Start-Fount background keepalive runshell $Global:FountAssist.FountUsername preload chars $Global:FountAssist.AssistCharname
-	if ($script:FountAssistInstalled) {
-		return
+	if (-not (Test-FountRunning)) {
+		Start-Fount background keepalive runshell $Global:FountAssist.FountUsername preload chars $Global:FountAssist.AssistCharname
 	}
-	if ($EshellUI) {
-		. $PSScriptRoot/esh-assist.ps1
-	}
-	else {
-		. $PSScriptRoot/pwsh-assist.ps1
-	}
+	if ($script:FountAssistInstalled) { return }
+	if ($EshellUI) { . $PSScriptRoot/esh-assist.ps1 }
+	else { . $PSScriptRoot/pwsh-assist.ps1 }
 }
 
-function Install-FountAssist {
-	param (
-		$FountUsername,
-		$AssistCharname
-	)
+function Install-FountAssist(
+	$FountUsername,
+	$AssistCharname
+) {
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
 	if ($EshellUI) {

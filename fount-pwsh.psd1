@@ -12,7 +12,7 @@
 	RootModule        = 'fount-pwsh.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.0.1'
+	ModuleVersion     = '0.0.2'
 
 	# ID used to uniquely identify this module
 	GUID              = '2a16dae2-91d8-4743-952c-94acd1ed7e5a'
@@ -73,7 +73,9 @@ Allows you:
 	FunctionsToExport = @(
 		"Set-FountAssist",
 		"Install-FountAssist",
-		"Get-FountClient",
+		"Set-FountClient",
+		"Close-FountClient",
+		"Test-FountRunning",
 		"Invoke-FountIPC",
 		"Start-FountShell",
 		"Invoke-FountShell",

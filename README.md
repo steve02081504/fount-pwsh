@@ -65,6 +65,6 @@ Fount 助手会在以下这些情况下自动出现：
 你可以使用 `f` 命令来轻松地禁用或启用自动助手功能：
 
 ```powershell
-f 0    # 禁用自动助手 (也可以用 f false / f no / f n / f disable)
-f 1    # 启用自动助手 (也可以用 f true / f yes / f y / f enable)
+f 0    # 禁用自动助手 (也可以用 f false / f no / f n / f disable / f unset / f off 等)
+f 1    # 启用自动助手 (也可以用 f true / f yes / f y / f enable / f set / f on 等)
 ```

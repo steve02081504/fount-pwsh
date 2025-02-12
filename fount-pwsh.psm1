@@ -5,7 +5,9 @@
 Export-ModuleMember -Function @(
 	"Set-FountAssist",
 	"Install-FountAssist",
-	"Get-FountClient",
+	"Set-FountClient",
+	"Close-FountClient",
+	"Test-FountRunning",
 	"Invoke-FountIPC",
 	"Start-FountShell",
 	"Invoke-FountShell",

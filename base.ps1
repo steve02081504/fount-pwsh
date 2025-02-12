@@ -1,31 +1,47 @@
 ﻿$script:FountEncoding = [System.Text.Encoding]::UTF8
 
-function Get-FountClient($ComputerName = "localhost", $Port = 16698) {
-	if ($script:FountClient -and $script:FountClient.Connected) {
-		return $script:FountClient
+$script:FountClient = $null
+$script:FountStream = $null
+function Set-FountClient($ComputerName = "localhost", $Port = 16698) {
+	if ($script:FountClient) {
+		if ($script:FountClient.Connected) {
+			return $script:FountClient
+		}
+		else {
+			Close-FountClient
+		}
 	}
 
-	try {
-		Write-Verbose "正在尝试连接到 Fount 服务器..."
-		# 创建新的 TCP 客户端
-		$Client = New-Object System.Net.Sockets.TcpClient
-		$Client.Connect($ComputerName, $Port)
+	Write-Verbose "正在尝试连接到 Fount 服务器..."
+	# 创建新的 TCP 客户端
+	$Client = New-Object System.Net.Sockets.TcpClient
+	if ($Client.ConnectAsync($ComputerName, $Port).Wait(100)) {
 		Write-Verbose "成功连接到 Fount 服务器。"
-		return $Client
+		$script:FountClient = $Client
 	}
- catch {
-		Write-Error "与 Fount 服务器建立连接失败： $($_.Exception.Message)"
-		return $null
+	else {
+		Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
+	}
+}
+function Close-FountClient {
+	if ($script:FountStream) {
+		$script:FountStream.Dispose()
+		$script:FountStream = $null
+	}
+	if ($script:FountClient) {
+		if ($script:FountClient.Connected) {
+			$script:FountClient.Close()
+		}
+		$script:FountClient.Dispose()
+		$script:FountClient = $null
 	}
 }
 
-$script:FountClient = $null
-$script:FountStream = $null
 function Invoke-FountIPC(
-		[string]$Type,
-		[hashtable]$Data,
-		[string]$ComputerName = "localhost",
-		[int]$Port = 16698
+	[string]$Type,
+	[hashtable]$Data,
+	[string]$ComputerName = "localhost",
+	[int]$Port = 16698
 ) {
 	# 构建要发送的完整 JSON 对象
 	$CommandObject = @{
@@ -35,15 +51,12 @@ function Invoke-FountIPC(
 	$JsonCommand = $CommandObject | ConvertTo-Json -Compress -Depth 100
 	$JsonCommand += "`n"  # 添加换行符作为消息结束符
 
-	#Write-Host "Sending command:" -ForegroundColor Green
-	#$CommandObject | ConvertTo-Json -Depth 100 | Write-Host
-
 	try {
 		# 获取或建立连接
 		if (-not $script:FountClient) {
-			$script:FountClient = Get-FountClient -ComputerName $ComputerName -Port $Port
+			Set-FountClient -ComputerName $ComputerName -Port $Port
 			if (-not $script:FountClient) {
-				throw "无法连接到 Fount 服务器"
+				Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
 			}
 		}
 		if (-not $script:FountClient.Connected) {
@@ -90,22 +103,16 @@ function Invoke-FountIPC(
 		# 解析 JSON 响应
 		if (-not [string]::IsNullOrEmpty($ResponseString)) {
 			$result = ConvertFrom-Json -InputObject $ResponseString
-			#Write-Host "Received response:" -ForegroundColor Green
-			#$result | ConvertTo-Json -Depth 100 | Write-Host
 			if ($result.status -ne 'ok') {
-				Write-Error "与 Fount 服务器通信失败: $($result.message)"
+				Write-Error "与 Fount 服务器通信失败: $($result.message)" -ErrorAction Stop
 			}
 			else {
 				return $result.data
 			}
 		}
 		else {
-			Write-Error "收到空响应"
+			Write-Error "收到空响应" -ErrorAction Stop
 		}
-	}
-	catch {
-		Write-Error "与 Fount 服务器通信失败: $($_.Exception.Message)"
-		Close-FountClient  # 连接出错时关闭连接，以便下次重新连接
 	}
 	finally {
 		if ($MemoryStream) {
@@ -148,6 +155,16 @@ function Invoke-FountShell {
 		username  = $UserName
 		shellname = $ShellName
 		data      = $Data
+	}
+}
+
+function Test-FountRunning {
+	try {
+		Invoke-FountIPC -Type "ping" -ErrorAction Stop | Out-Null
+		$true
+	}
+	catch {
+		$false
 	}
 }
 
