@@ -12,14 +12,14 @@ function Set-FountClient($ComputerName = "localhost", $Port = 16698) {
 		}
 	}
 
-	Write-Verbose "正在尝试连接到 Fount 服务器..."
-	# 创建新的 TCP 客户端
-	$Client = New-Object System.Net.Sockets.TcpClient
-	if ($Client.ConnectAsync($ComputerName, $Port).Wait(100)) {
+	try{
+		# 创建新的 TCP 客户端
+		$Client = New-Object System.Net.Sockets.TcpClient
+		$Client.Connect($ComputerName, $Port)
 		Write-Verbose "成功连接到 Fount 服务器。"
 		$script:FountClient = $Client
 	}
-	else {
+	catch {
 		Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
 	}
 }
