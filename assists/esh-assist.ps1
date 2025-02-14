@@ -1,7 +1,7 @@
 ﻿$EshellUI.ExecutionRecorders.Add({
 	if ($Global:FountAssist.last_commaned) {
-		$Global:FountAssist.last_commaned.output = $($ans | Out-String) -join "`n"
-		$Global:FountAssist.last_commaned.error = $($err | Out-String) -join "`n"
+		$Global:FountAssist.last_commaned.output = $ans | Out-String -Width 65536
+		$Global:FountAssist.last_commaned.error = $err | Out-String -Width 65536
 		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
 	}
 	$Global:FountAssist.last_commaned = @{

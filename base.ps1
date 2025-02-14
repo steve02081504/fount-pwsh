@@ -2,7 +2,7 @@
 
 $script:FountClient = $null
 $script:FountStream = $null
-function Set-FountClient($ComputerName = "localhost", $Port = 16698) {
+function Set-FountClient($ComputerName = "localhost", $Port = 16698, $timeout = 100) {
 	if ($script:FountClient) {
 		if ($script:FountClient.Connected) {
 			return $script:FountClient
@@ -12,16 +12,16 @@ function Set-FountClient($ComputerName = "localhost", $Port = 16698) {
 		}
 	}
 
-	try{
-		# 创建新的 TCP 客户端
-		$Client = New-Object System.Net.Sockets.TcpClient
-		$Client.Connect($ComputerName, $Port)
-		Write-Verbose "成功连接到 Fount 服务器。"
-		$script:FountClient = $Client
+	# 创建新的 TCP 客户端
+	$Client = New-Object System.Net.Sockets.TcpClient
+	if ($Client.ConnectAsync($ComputerName, $Port).Wait($timeout)) {
+		if ($Client.Connected) {
+			Write-Verbose "成功连接到 Fount 服务器。"
+			$script:FountClient = $Client
+			return
+		}
 	}
-	catch {
-		Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
-	}
+	Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
 }
 function Close-FountClient {
 	if ($script:FountStream) {

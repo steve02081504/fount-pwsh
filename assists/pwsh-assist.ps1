@@ -15,7 +15,7 @@
 		shelltype                = "powershell"
 		shellhistory             = $Global:FountAssist.shellhistory
 		command_now              = $Global:FountAssist.last_commaned.command
-		command_error            = $($Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String) -join "`n"
+		command_error            = $Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String -Width 65536
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
 		pwd                      = "$pwd"
@@ -92,7 +92,7 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
 
 	if ($Global:FountAssist.last_commaned) {
 		$Global:FountAssist.last_commaned.output = $($ans | Out-String) -join "`n"
-		$Global:FountAssist.last_commaned.error = $($Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String) -join "`n"
+		$Global:FountAssist.last_commaned.error = $Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String -Width 65536
 		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
 	}
 
@@ -130,7 +130,7 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
 	}
 
 	#若当前表达式是合法ps脚本但不是合法命令
-	if ($bad_expr) {
+	if ($bad_expr -and !$PSDebugContext) {
 		f
 		$YIndexBackup = $host.UI.RawUI.CursorPosition.Y
 		[Microsoft.PowerShell.PSConsoleReadLine]::CancelLine()
@@ -150,7 +150,7 @@ if (-not $Global:FountAssist.OriginalPrompt) {
 	$Global:FountAssist.OriginalPrompt = Get-Content function:\prompt
 }
 function global:prompt {
-	if (-not $? -and $Global:FountAssist.NonZeroReturnWhiteList -notcontains (($expr_now -split '\s')[0])) {
+	if (-not $PSDebugContext -and -not $? -and $Global:FountAssist.NonZeroReturnWhiteList -notcontains (($expr_now -split '\s')[0])) {
 		if ($Global:FountAssist.Enabled) {
 			try{ f } catch {}
 		}

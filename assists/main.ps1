@@ -17,7 +17,9 @@ function Set-FountAssist(
 ) {
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
-	Start-Fount background keepalive runshell $Global:FountAssist.FountUsername preload chars $Global:FountAssist.AssistCharname
+	if (!(Test-FountRunning)) {
+		Start-Fount background keepalive runshell $Global:FountAssist.FountUsername preload chars $Global:FountAssist.AssistCharname
+	}
 	if ($script:FountAssistInstalled) { return }
 	if ($EshellUI) { . $PSScriptRoot/esh-assist.ps1 }
 	else { . $PSScriptRoot/pwsh-assist.ps1 }
