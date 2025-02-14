@@ -1,5 +1,7 @@
 # fount-pwsh
 
+[![PSGallery download num](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
+
 **fount-pwsh** 是一个工具，它可以让你在 PowerShell (pwsh) 或 esh 终端中轻松使用 **Fount**。  
 它可以帮你更好地使用 shell，或只是在 shell 里和角色聊天。
 
