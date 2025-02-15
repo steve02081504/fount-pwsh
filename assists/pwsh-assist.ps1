@@ -152,7 +152,7 @@ if (-not $Global:FountAssist.OriginalPrompt) {
 function global:prompt {
 	if (-not $PSDebugContext -and -not $? -and $Global:FountAssist.NonZeroReturnWhiteList -notcontains (($expr_now -split '\s')[0])) {
 		if ($Global:FountAssist.Enabled) {
-			try{ f } catch {}
+			try { f } catch {}
 		}
 	}
 	& $Global:FountAssist.OriginalPrompt

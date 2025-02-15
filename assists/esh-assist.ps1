@@ -94,7 +94,10 @@ $EshellUI.ExecutionHandlers.Add({
 		return
 	}
 	#若当前表达式是合法ps脚本但不是合法命令
-	if ($global:bad_expr_now -and $global:expr_ast_now) {
+	if ($global:expr_err_now -is [System.Management.Automation.Language.ParseError[]]) {
+		return
+	}
+	if ($global:bad_expr_now) {
 		f
 		return '' #终止当前表达式
 	}
