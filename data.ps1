@@ -1,4 +1,4 @@
-# 获取 Fount 工具的根目录。
+﻿# 获取 Fount 工具的根目录。
 function Get-FountDirectory {
 	# Get-Command fount.ps1 获取 fount.ps1 脚本的信息。
 	# .Path 获取脚本的完整路径。

@@ -1,4 +1,4 @@
-. $PSScriptRoot/base.ps1
+﻿. $PSScriptRoot/base.ps1
 . $PSScriptRoot/predicate.ps1
 . $PSScriptRoot/assists/main.ps1
 . $PSScriptRoot/data.ps1

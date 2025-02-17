@@ -1,4 +1,4 @@
-# 获取具有补全脚本的 Shell 列表。
+﻿# 获取具有补全脚本的 Shell 列表。
 function Get-FountShellListWithCompleter {
 	param([string]$Username)
 	# 获取指定用户或所有用户的可用 Shell 列表。
