@@ -12,7 +12,7 @@
 	RootModule        = 'fount-pwsh.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.0.5'
+	ModuleVersion     = '0.0.0'
 
 	# ID used to uniquely identify this module
 	GUID              = '2a16dae2-91d8-4743-952c-94acd1ed7e5a'
@@ -71,17 +71,25 @@ Allows you:
 
 	# Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 	FunctionsToExport = @(
-		"Set-FountAssist",
-		"Install-FountAssist",
-		"Set-FountClient",
-		"Close-FountClient",
-		"Test-FountRunning",
-		"Invoke-FountIPC",
-		"Start-FountShell",
-		"Invoke-FountShell",
-		"Start-Fount",
-		"Stop-Fount",
+		"Set-FountAssist"
+		"Install-FountAssist"
+
+		"Set-FountClient"
+		"Close-FountClient"
+		"Test-FountRunning"
+		"Invoke-FountIPC"
+		"Start-FountShell"
+		"Invoke-FountShell"
+
+		"Start-Fount"
+		"Stop-Fount"
 		"Install-Fount"
+
+		"Get-FountDirectory"
+		"Get-FountUserList"
+		"Get-FountParts"
+		"Get-FountPartList"
+		"Get-FountPartDirectory"
 	)
 
 	# Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
