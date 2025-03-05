@@ -55,6 +55,7 @@
 		Write-Host "]"
 		[console]::TreatControlCAsInput = $true
 		while ($true) {
+			Start-Sleep -Milliseconds 100
 			if ([console]::KeyAvailable) {
 				$key = [console]::ReadKey($true)
 				if ($key.Key -eq "Enter") {
