@@ -84,6 +84,7 @@ function global:f(
 					return f
 				}
 				if ($key.Key -eq "C" -and $key.Modifiers -eq "Control") {
+					$EshellUI.CancelLine()
 					return
 				}
 			}
@@ -100,7 +101,7 @@ $EshellUI.ExecutionHandlers.Add({
 	}
 	if ($global:bad_expr_now) {
 		f
-		return '' #终止当前表达式
+		return #终止当前表达式
 	}
 }) | Out-Null
 $EshellUI.AfterExecutionHandlers.Add({
