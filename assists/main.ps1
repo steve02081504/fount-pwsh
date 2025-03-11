@@ -23,6 +23,7 @@ function Set-FountAssist(
 	if ($script:FountAssistInstalled) { return }
 	if ($EshellUI) { . $PSScriptRoot/esh-assist.ps1 }
 	else { . $PSScriptRoot/pwsh-assist.ps1 }
+	$script:FountAssistInstalled = $true
 }
 
 function Install-FountAssist(

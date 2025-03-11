@@ -101,11 +101,13 @@ $EshellUI.ExecutionHandlers.Add({
 	}
 	if ($global:bad_expr_now) {
 		f
+		$Global:FountAssist.Triggered = $true
 		return #终止当前表达式
 	}
 }) | Out-Null
 $EshellUI.AfterExecutionHandlers.Add({
-	if (!$Global:FountAssist.Enabled) {
+	if ($Global:FountAssist.Triggered -or !$Global:FountAssist.Enabled) {
+		$Global:FountAssist.Triggered = $false
 		return
 	}
 	#若当前表达式退出值不为0且不在白名单中
