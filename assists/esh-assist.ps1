@@ -102,7 +102,7 @@ $EshellUI.ExecutionHandlers.Add({
 	if ($global:bad_expr_now) {
 		f
 		$Global:FountAssist.Triggered = $true
-		return #终止当前表达式
+		return '' #终止当前表达式
 	}
 }) | Out-Null
 $EshellUI.AfterExecutionHandlers.Add({
