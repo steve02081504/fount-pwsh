@@ -1,5 +1,6 @@
 # fount-pwsh
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![PSGallery 다운로드 수](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
 
 **fount-pwsh**는 PowerShell (pwsh) 또는 esh 터미널에서 **Fount**를 쉽게 사용할 수 있도록 하는 도구입니다.

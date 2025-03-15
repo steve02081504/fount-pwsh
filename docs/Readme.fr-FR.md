@@ -1,5 +1,6 @@
 # fount-pwsh
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![Nombre de téléchargements PSGallery](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
 
 **fount-pwsh** est un outil qui vous permet d'utiliser facilement **Fount** dans les terminaux PowerShell (pwsh) ou esh.

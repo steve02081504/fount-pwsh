@@ -1,5 +1,6 @@
 # फाउंट-pwsh
 
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![PSGallery डाउनलोड संख्या](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
 
 **फाउंट-pwsh** एक उपकरण है जो आपको पॉवरशेल (pwsh) या esh टर्मिनलों में आसानी से **फाउंट** का उपयोग करने की अनुमति देता है।
