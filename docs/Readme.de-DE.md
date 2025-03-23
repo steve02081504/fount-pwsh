@@ -3,7 +3,7 @@
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![PSGallery Download-Anzahl](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
 
-**fount-pwsh** ist ein Tool, mit dem Sie **Fount** einfach in PowerShell (pwsh) oder esh-Terminals verwenden können.
+**fount-pwsh** ist ein Tool, mit dem Sie [fount](https://github.com/steve02081504/fount) einfach in PowerShell oder esh-Terminals verwenden können.
 Es kann Ihnen helfen, Ihre Shell besser zu nutzen oder einfach nur mit Rollen in der Shell zu chatten.
 
 ![Bild: fount-pwsh Anwendungsbeispiel](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -16,48 +16,48 @@ Verwenden Sie diesen Befehl, um das `fount-pwsh`-Modul zu installieren:
 Install-Module fount-pwsh
 ```
 
-**Hinweis:** `fount-pwsh` ist darauf angewiesen, dass [Fount](https://github.com/steve02081504/fount) funktioniert.
+**Hinweis:** `fount-pwsh` ist darauf angewiesen, dass [fount](https://github.com/steve02081504/fount) funktioniert.
 Aber keine Sorge!
-Wenn Sie Fount noch nicht installiert haben, installiert `fount-pwsh` **Fount automatisch für Sie**, wenn Sie zum ersten Mal die folgenden Befehle verwenden:
+Wenn Sie fount noch nicht installiert haben, installiert `fount-pwsh` **fount automatisch für Sie**, wenn Sie zum ersten Mal die folgenden Befehle verwenden:
 
-- `Start-Fount`
+- `Start-fount`
 - `Set-FountAssist`
 - `Install-FountAssist`
 
 ## Assistent konfigurieren
 
-Sie benötigen eine **Fount-Rolle**, die die **`shellassist` Schnittstelle** unterstützt.
+Sie benötigen eine **fount-Rolle**, die die **`shellassist` Schnittstelle** unterstützt.
 
 > [!WARNING]
 > **Über die PowerShell-Leistung**
 >
-> In PowerShell dauert das Laden eines Fount-Assistenten durchschnittlich **etwa 600 Millisekunden**. Dies kann die Startgeschwindigkeit Ihrer Shell leicht beeinträchtigen. (Für esh ist das Laden **augenblicklich**.)
+> In PowerShell dauert das Laden eines fount-Assistenten durchschnittlich **etwa 600 Millisekunden**. Dies kann die Startgeschwindigkeit Ihrer Shell leicht beeinträchtigen. (Für esh ist das Laden **augenblicklich**.)
 >
-> Wenn Sie möchten, dass PowerShell schneller startet, können Sie das Laden des Fount-Assistenten auf **Hintergrundladen** einstellen (siehe PowerShell [Ereignisregistrierung](https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/register-engineevent?view=powershell-7.5) und [OnIdle](https://learn.microsoft.com/dotnet/api/system.management.automation.psengineevent.onidle?view=powershellsdk-7.4.0) Ereignis).
+> Wenn Sie möchten, dass PowerShell schneller startet, können Sie das Laden des fount-Assistenten auf **Hintergrundladen** einstellen (siehe PowerShell [Ereignisregistrierung](https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/register-engineevent?view=powershell-7.5) und [OnIdle](https://learn.microsoft.com/dotnet/api/system.management.automation.psengineevent.onidle?view=powershellsdk-7.4.0) Ereignis).
 
 **Zwei Methoden zum Aktivieren Ihres Assistenten:**
 
 **1. Automatische Konfiguration (empfohlen):**
 
-Mit diesem Befehl können Sie den Fount-Assistenten automatisch starten und Hilfe leisten lassen, wenn Sie ein neues Shell-Fenster öffnen:
+Mit diesem Befehl können Sie den fount-Assistenten automatisch starten und Hilfe leisten lassen, wenn Sie ein neues Shell-Fenster öffnen:
 
 ```powershell
-Install-FountAssist <Ihr Fount-Benutzername> <Name der benötigten Rolle>
+Install-FountAssist <Ihr fount-Benutzername> <Name der benötigten Rolle>
 ```
 
-Ersetzen Sie `<Ihr Fount-Benutzername>` und `<Name der benötigten Rolle>` durch Ihren tatsächlichen Fount-Benutzernamen und Rollennamen.
+Ersetzen Sie `<Ihr fount-Benutzername>` und `<Name der benötigten Rolle>` durch Ihren tatsächlichen fount-Benutzernamen und Rollennamen.
 
 **2. Manuelle Konfiguration (für fortgeschrittene Benutzer):**
 
 Wenn Sie dies manuell einrichten möchten, können Sie den folgenden Code zu Ihrer **Shell-Profildatei** hinzufügen:
 
 ```powershell
-Set-FountAssist <Ihr Fount-Benutzername> <Name der benötigten Rolle>
+Set-FountAssist <Ihr fount-Benutzername> <Name der benötigten Rolle>
 ```
 
 ## Wann erscheint der Assistent?
 
-Der Fount-Assistent erscheint automatisch in den folgenden Fällen:
+Der fount-Assistent erscheint automatisch in den folgenden Fällen:
 
 - **Wenn Sie einen falschen Befehl eingegeben haben** (z. B. Tippfehler).
 - **Wenn die Ausführung eines Befehls fehlschlägt** (der Wert von `$?` ist falsch).

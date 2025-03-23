@@ -1,12 +1,12 @@
-﻿# 获取 Fount 工具的根目录。
+﻿# 获取 fount 工具的根目录。
 function Get-FountDirectory {
 	# Get-Command fount.ps1 获取 fount.ps1 脚本的信息。
 	# .Path 获取脚本的完整路径。
-	# Split-Path -Parent 两次，获取脚本所在目录的父目录，即 Fount 工具的根目录。
+	# Split-Path -Parent 两次，获取脚本所在目录的父目录，即 fount 工具的根目录。
     (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
 }
 
-# 获取所有 Fount 用户的用户名列表。
+# 获取所有 fount 用户的用户名列表。
 function Get-FountUserList {
 	# $(Get-FountDirectory)/data/users 构造用户数据目录的路径。
 	# Get-ChildItem -Directory 获取该目录下的所有子目录（即用户名）。

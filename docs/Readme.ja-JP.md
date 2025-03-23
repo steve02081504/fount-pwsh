@@ -3,7 +3,7 @@
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![PSGallery ダウンロード数](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
 
-**fount-pwsh** は、PowerShell (pwsh) または esh ターミナルで **Fount** を簡単に使用できるようにするツールです。
+**fount-pwsh** は、PowerShell または esh ターミナルで [fount](https://github.com/steve02081504/fount) を簡単に使用できるようにするツールです。
 シェルをより有効に活用したり、シェル内でロールとチャットしたりするのに役立ちます。
 
 ![画像: fount-pwsh の使用例](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -16,17 +16,17 @@
 Install-Module fount-pwsh
 ```
 
-**注意:** `fount-pwsh` は、[Fount](https://github.com/steve02081504/fount) が動作することを前提としています。
+**注意:** `fount-pwsh` は、[fount](https://github.com/steve02081504/fount) が動作することを前提としています。
 ただし、ご心配なく。
-Fount をまだインストールしていない場合でも、`fount-pwsh` は、以下のコマンドを初めて使用するときに **自動的に Fount をインストール** します。
+fount をまだインストールしていない場合でも、`fount-pwsh` は、以下のコマンドを初めて使用するときに **自動的に fount をインストール** します。
 
-- `Start-Fount`
+- `Start-fount`
 - `Set-FountAssist`
 - `Install-FountAssist`
 
 ## アシスタントの設定
 
-**`shellassist` インターフェース** をサポートする **Fount ロール** が必要です。
+**`shellassist` インターフェース** をサポートする **fount ロール** が必要です。
 
 > [!WARNING]
 > **PowerShell のパフォーマンスについて**
@@ -42,22 +42,22 @@ Fount をまだインストールしていない場合でも、`fount-pwsh` は�
 新しいシェルウィンドウを開くたびに、Fount アシスタントが自動的に起動して支援を提供するようにするには、このコマンドを使用します。
 
 ```powershell
-Install-FountAssist <Fount ユーザー名> <必要なロール名>
+Install-FountAssist <fount ユーザー名> <必要なロール名>
 ```
 
-`<Fount ユーザー名>` と `<必要なロール名>` を実際の Fount ユーザー名とロール名に置き換えてください。
+`<fount ユーザー名>` と `<必要なロール名>` を実際の fount ユーザー名とロール名に置き換えてください。
 
 **2. 手動構成 (高度なユーザー向け):**
 
 手動で設定する場合は、次のコードを **シェルプロファイル** ファイルに追加できます。
 
 ```powershell
-Set-FountAssist <Fount ユーザー名> <必要なロール名>
+Set-FountAssist <fount ユーザー名> <必要なロール名>
 ```
 
 ## アシスタントはいつ表示されますか？
 
-Fount アシスタントは、次の状況で自動的に表示されます。
+fount アシスタントは、次の状況で自動的に表示されます。
 
 - **間違ったコマンドを入力した場合**（スペルミスなど）。
 - **実行したコマンドの実行に失敗した場合** (`$?` の値が false の場合)。

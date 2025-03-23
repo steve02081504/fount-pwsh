@@ -3,7 +3,7 @@
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/steve02081504/fount)
 [![PSGallery डाउनलोड संख्या](https://img.shields.io/powershellgallery/dt/fount-pwsh)](https://www.powershellgallery.com/packages/fount-pwsh)
 
-**फाउंट-pwsh** एक उपकरण है जो आपको पॉवरशेल (pwsh) या esh टर्मिनलों में आसानी से **फाउंट** का उपयोग करने की अनुमति देता है।
+**फाउंट-pwsh** एक उपकरण है जो आपको पॉवरशेल या esh टर्मिनलों में आसानी से [फाउंट](https://github.com/steve02081504/fount) का उपयोग करने की अनुमति देता है।
 यह आपकी शेल का बेहतर उपयोग करने में या शेल में भूमिकाओं के साथ चैट करने में आपकी मदद कर सकता है।
 
 ![चित्र: फाउंट-pwsh उपयोग उदाहरण](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
@@ -20,7 +20,7 @@ Install-Module fount-pwsh
 लेकिन चिंता न करें!
 यदि आपने अभी तक फाउंट स्थापित नहीं किया है, तो `फाउंट-pwsh` आपके लिए **स्वचालित रूप से फाउंट स्थापित कर देगा** जब आप पहली बार निम्नलिखित कमांड का उपयोग करेंगे:
 
-- `Start-Fount`
+- `Start-fount`
 - `Set-FountAssist`
 - `Install-FountAssist`
 

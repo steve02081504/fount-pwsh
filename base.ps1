@@ -16,12 +16,12 @@ function Set-FountClient($ComputerName = "localhost", $Port = 16698, $timeout = 
 	$Client = New-Object System.Net.Sockets.TcpClient
 	if ($Client.ConnectAsync($ComputerName, $Port).Wait($timeout)) {
 		if ($Client.Connected) {
-			Write-Verbose "成功连接到 Fount 服务器。"
+			Write-Verbose "成功连接到 fount 服务器。"
 			$script:FountClient = $Client
 			return
 		}
 	}
-	Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
+	Write-Error "无法连接到 fount 服务器" -ErrorAction Stop
 }
 function Close-FountClient {
 	if ($script:FountStream) {
@@ -56,7 +56,7 @@ function Invoke-FountIPC(
 		if (-not $script:FountClient) {
 			Set-FountClient -ComputerName $ComputerName -Port $Port
 			if (-not $script:FountClient) {
-				Write-Error "无法连接到 Fount 服务器" -ErrorAction Stop
+				Write-Error "无法连接到 fount 服务器" -ErrorAction Stop
 			}
 		}
 		if (-not $script:FountClient.Connected) {
@@ -104,7 +104,7 @@ function Invoke-FountIPC(
 		if (-not [string]::IsNullOrEmpty($ResponseString)) {
 			$result = ConvertFrom-Json -InputObject $ResponseString
 			if ($result.status -ne 'ok') {
-				Write-Error "与 Fount 服务器通信失败: $($result.message)" -ErrorAction Stop
+				Write-Error "与 fount 服务器通信失败: $($result.message)" -ErrorAction Stop
 			}
 			else {
 				return $result.data
@@ -184,7 +184,7 @@ function Start-Fount(
 		Install-Fount @args
 	}
 	else {
-		Write-Error "Fount 未安装"
+		Write-Error "fount 未安装"
 	}
 }
 

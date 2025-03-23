@@ -65,7 +65,7 @@ function Invoke-RunshellCompletion {
 	}
 }
 
-# 定义 Fount 工具的参数结构。
+# 定义 fount 工具的参数结构。
 $ArgumentStructure = @{
 	Root = @{
 		# 根节点包含的参数。
@@ -96,7 +96,7 @@ if (-not $IsWindows) {
 	Remove-ArgumentNode -Node $ArgumentStructure.Root -Key 'geneexe'
 }
 
-# Fount 工具的主参数补全函数。
+# fount 工具的主参数补全函数。
 function Get-FountArgumentCompletion {
 	param(
 		[string]$WordToComplete,
