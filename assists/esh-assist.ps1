@@ -95,10 +95,6 @@ $EshellUI.ExecutionHandlers.Add({
 	if (!$Global:FountAssist.Enabled) {
 		return
 	}
-	#若当前表达式是合法ps脚本但不是合法命令
-	if ($global:expr_err_now -is [System.Management.Automation.Language.ParseError[]]) {
-		return
-	}
 	if ($global:bad_expr_now) {
 		f
 		$Global:FountAssist.Triggered = $true

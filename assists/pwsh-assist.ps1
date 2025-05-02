@@ -118,7 +118,7 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
 	$ast = [System.Management.Automation.Language.Parser]::ParseInput($line, [ref]$null, [ref]$parseError)
 
 	$bad_expr = $false
-	if ($parseError) {
+	if (!$parseError) {
 		[Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
 		return
 	}
