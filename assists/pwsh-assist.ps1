@@ -2,12 +2,16 @@
 	[ValidateScript({
 		(IsEnable $_) -or (IsDisable $_) -or (!$_)
 	})]
-	$switch
+	$switch,
+	$CommandErrors
 ) {
 	if ($switch -ne $null) {
 		$Global:FountAssist.Enabled = IsEnable $switch
 		Write-Host "fount assist is $(@('disabled','enabled')[$Global:FountAssist.Enabled])"
 		return
+	}
+	if (!$CommandErrors) {
+		$CommandErrors = $Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount
 	}
 	$requst = @{
 		charname                 = $Global:FountAssist.AssistCharname
@@ -15,7 +19,7 @@
 		shelltype                = "powershell"
 		shellhistory             = $Global:FountAssist.shellhistory
 		command_now              = $Global:FountAssist.last_commaned.command
-		command_error            = $Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String -Width 65536
+		command_error            = $CommandErrors | Out-String -Width 65536
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
 		pwd                      = "$pwd"
@@ -30,6 +34,12 @@
 
 	if ($result.content -or $result.recommend_command) {
 		Write-Host
+	}
+	if ($Global:FountAssist.last_commaned) {
+		$Global:FountAssist.last_commaned.output = $ans | Out-String -Width 65536
+		$Global:FountAssist.last_commaned.error = $requst.command_error
+		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
+		$Global:FountAssist.last_commaned = $null
 	}
 	if ($result.content) {
 		$Global:FountAssist.shellhistory.Add(@{
@@ -92,7 +102,7 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
 	[Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
 
 	if ($Global:FountAssist.last_commaned) {
-		$Global:FountAssist.last_commaned.output = $($ans | Out-String) -join "`n"
+		$Global:FountAssist.last_commaned.output = $ans | Out-String -Width 65536
 		$Global:FountAssist.last_commaned.error = $Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String -Width 65536
 		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
 	}
@@ -118,21 +128,22 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
 	$ast = [System.Management.Automation.Language.Parser]::ParseInput($line, [ref]$null, [ref]$parseError)
 
 	$bad_expr = $false
-	if (!$parseError) {
-		[Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-		return
-	}
+	if ($parseError) { return f -CommandErrors $parseError }
+	$Errors = @()
 	$Commands = $ast.FindAll({param($ast) $ast -is [System.Management.Automation.Language.CommandAst] }, $true)
 	foreach ($Command in $Commands) {
-		if (!(Get-Command $Command.CommandElements[0] -ErrorAction Ignore)) {
+		$null = try {
+			Get-Command $Command.CommandElements[0]
+		}
+		catch {
 			$bad_expr = $true
-			break
+			$Errors.Add($_) | Out-Null
 		}
 	}
 
 	#若当前表达式是合法ps脚本但不是合法命令
 	if ($bad_expr -and !$PSDebugContext) {
-		f
+		f -CommandError $Errors
 		$YIndexBackup = $host.UI.RawUI.CursorPosition.Y
 		[Microsoft.PowerShell.PSConsoleReadLine]::CancelLine()
 		Write-Host "`b`b  " -NoNewline
@@ -153,7 +164,7 @@ if (-not $Global:FountAssist.OriginalPrompt) {
 function global:prompt {
 	if (-not $PSDebugContext -and -not $? -and $Global:FountAssist.NonZeroReturnWhiteList -notcontains (($expr_now -split '\s')[0])) {
 		if ($Global:FountAssist.Enabled) {
-			try { f } catch {}
+			try { f -CommandErrors '$? not true' } catch {}
 		}
 	}
 	& $Global:FountAssist.OriginalPrompt

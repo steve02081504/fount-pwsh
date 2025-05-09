@@ -18,12 +18,16 @@ function global:f(
 	[ValidateScript({
 		(IsEnable $_) -or (IsDisable $_) -or (!$_)
 	})]
-	$switch
+	$switch,
+	$CommandErrors
 ) {
 	if ($switch -ne $null) {
 		$Global:FountAssist.Enabled = IsEnable $switch
 		Write-Host "fount assist is $(@('disabled','enabled')[$Global:FountAssist.Enabled])"
 		return
+	}
+	if (!$CommandErrors) {
+		$CommandErrors = $global:expr_err_now
 	}
 	$requst = @{
 		charname                 = $Global:FountAssist.AssistCharname
@@ -31,7 +35,7 @@ function global:f(
 		shelltype                = "esh(like powershell)"
 		shellhistory             = $Global:FountAssist.shellhistory
 		command_now              = $expr_now
-		command_error            = $($global:expr_err_now | Out-String) -join "`n"
+		command_error            = $CommandErrors | Out-String -Width 65536
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
 		pwd                      = "$pwd"
@@ -46,6 +50,12 @@ function global:f(
 
 	if ($result.content -or $result.recommend_command) {
 		Write-Host
+	}
+	if ($Global:FountAssist.last_commaned) {
+		$Global:FountAssist.last_commaned.output = $ans | Out-String -Width 65536
+		$Global:FountAssist.last_commaned.error = $requst.command_error
+		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
+		$Global:FountAssist.last_commaned = $null
 	}
 	if ($result.content) {
 		$Global:FountAssist.shellhistory.Add(@{
@@ -96,7 +106,7 @@ $EshellUI.ExecutionHandlers.Add({
 		return
 	}
 	if ($global:bad_expr_now) {
-		f
+		f -CommandErrors $global:expr_err_now
 		$Global:FountAssist.Triggered = $true
 		return '' #终止当前表达式
 	}
@@ -108,6 +118,6 @@ $EshellUI.AfterExecutionHandlers.Add({
 	}
 	#若当前表达式退出值不为0且不在白名单中
 	if (-not $? -and $Global:FountAssist.NonZeroReturnWhiteList -notcontains (($expr_now -split '\s')[0])) {
-		f
+		f -CommandErrors '$? not true'
 	}
 }) | Out-Null
