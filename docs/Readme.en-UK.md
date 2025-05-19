@@ -26,8 +26,6 @@ If you haven't installed fount yet, `fount-pwsh` will **automatically install fo
 
 ## Configure Assistant
 
-You need a **fount role** that supports the **`shellassist` interface**.
-
 > [!WARNING]
 > **About PowerShell performance**
 >

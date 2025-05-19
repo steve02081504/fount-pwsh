@@ -26,8 +26,6 @@ Install-Module fount-pwsh
 
 ## Настройка помощника
 
-Вам нужна **роль fount**, поддерживающая **интерфейс `shellassist`**.
-
 > [!WARNING]
 > **О производительности PowerShell**
 >

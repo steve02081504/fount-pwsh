@@ -26,8 +26,6 @@ Install-Module fount-pwsh
 
 ## 어시스턴트 설정
 
-**`shellassist` 인터페이스**를 지원하는 **fount 역할**이 필요합니다.
-
 > [!WARNING]
 > **PowerShell 성능 정보**
 >

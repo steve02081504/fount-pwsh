@@ -26,8 +26,6 @@ Wenn Sie fount noch nicht installiert haben, installiert `fount-pwsh` **fount au
 
 ## Assistent konfigurieren
 
-Sie benötigen eine **fount-Rolle**, die die **`shellassist` Schnittstelle** unterstützt.
-
 > [!WARNING]
 > **Über die PowerShell-Leistung**
 >

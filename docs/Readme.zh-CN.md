@@ -26,8 +26,6 @@ Install-Module fount-pwsh
 
 ## 配置助手
 
-你需要一个支持 **`shellassist` 界面** 的 **fount 角色**。
-
 > [!WARNING]
 > **关于 PowerShell 性能**
 >

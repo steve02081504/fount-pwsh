@@ -26,8 +26,6 @@ Si aún no has instalado fount, `fount-pwsh` **instalará fount automáticamente
 
 ## Configurar Asistente
 
-Necesitas un **rol de fount** que admita la **interfaz `shellassist`**.
-
 > [!WARNING]
 > **Acerca del rendimiento de PowerShell**
 >
