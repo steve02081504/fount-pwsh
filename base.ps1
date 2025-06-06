@@ -121,39 +121,47 @@ function Invoke-FountIPC(
 	}
 }
 
-function Start-FountShell {
+function Start-FountPart {
 	param(
+		[Parameter(Mandatory)]
+		[string]$PartType,
+
 		[Parameter(Mandatory)]
 		[string]$UserName,
 
 		[Parameter(Mandatory)]
-		[string]$ShellName,
+		[string]$PartName,
 
 		[Parameter(ValueFromRemainingArguments)]
 		[array]$Arguments
 	)
 
-	Invoke-FountIPC -Type "runshell" -Data @{
+	Invoke-FountIPC -Type "runpart" -Data @{
 		username  = $UserName
-		shellname = $ShellName
+		parttype  = $PartType
+		partname  = $PartName
 		args      = $Arguments
 	}
 }
 
-function Invoke-FountShell {
+function Invoke-FountPart {
 	param (
+		[Parameter(Mandatory)]
+		[string]$PartType,
+
 		[Parameter(Mandatory)]
 		[string]$UserName,
 
 		[Parameter(Mandatory)]
-		[string]$ShellName,
+		[string]$PartName,
 
 		$Data
 	)
 
-	Invoke-FountIPC -Type "invokeshell" -Data @{
+	Invoke-FountIPC -Type "invokepart" -Data @{
 		username  = $UserName
-		shellname = $ShellName
+		parttype  = $PartType
+		partname  = $PartName
 		data      = $Data
 	}
 }

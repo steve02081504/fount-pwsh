@@ -78,8 +78,8 @@ Allows you:
 		"Close-FountClient"
 		"Test-FountRunning"
 		"Invoke-FountIPC"
-		"Start-FountShell"
-		"Invoke-FountShell"
+		"Start-FountPart"
+		"Invoke-FountPart"
 
 		"Start-Fount"
 		"Stop-Fount"

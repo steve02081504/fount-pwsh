@@ -1,11 +1,17 @@
-﻿# 获取具有补全脚本的 Shell 列表。
-function Get-FountShellListWithCompleter {
-	param([string]$Username)
+﻿function Get-FountPartTypeList {
+	@(
+		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders'
+	)
+}
+
+# 获取具有补全脚本的 Part 列表。
+function Get-FountPartListWithCompleter {
+	param([string]$Username, [string]$parttype)
 	# 获取指定用户或所有用户的可用 Shell 列表。
-	Get-FountPartList -parttype shells -Username $Username |
+	Get-FountPartList -parttype $parttype -Username $Username |
 	# 筛选出存在 argument_completer.ps1 脚本的 Shell。
 	Where-Object {
-		$shellDir = Get-FountPartDirectory -Username $Username -parttype shells -partname $_
+		$shellDir = Get-FountPartDirectory -Username $Username -parttype $parttype -partname $_
 		Test-Path (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") -PathType Leaf
 	}
 }
@@ -22,46 +28,56 @@ function Remove-ArgumentNode {
 	}
 }
 
-# 处理 'runshell' 子命令的参数补全。
+# 处理 'run' 子命令的参数补全。
 function Invoke-RunshellCompletion {
 	param(
 		[string]$WordToComplete,
 		[System.Management.Automation.Language.CommandAst]$CommandAst,
 		[int]$CursorPosition,
-		[int]$runshellIndex, # 'runshell' 命令在 CommandAst 中的索引。
-		[int]$Argindex         # 当前参数在 CommandAst 中的索引。
+		[int]$runIndex, # 'run' 命令在 CommandAst 中的索引。
+		[int]$Argindex  # 当前参数在 CommandAst 中的索引。
 	)
 
 	# 提取用户名和 shellname，处理它们可能还不存在的情况。
-	# $runshellIndex + 1 是用户名的可能位置。
-	# $runshellIndex + 2 是 shellname 的可能位置。
+	# $runIndex + 1 是parttype的可能位置。
+	# $runIndex + 2 是用户名的可能位置。
+	# $runIndex + 3 是 partname 的可能位置。
 	# 如果索引在 CommandAst 的范围内，并且元素是字符串常量，则提取其值。
-	$username = if ($runshellIndex + 1 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runshellIndex + 1] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
-		$CommandAst.CommandElements[$runshellIndex + 1].Value
+	$parttype = if ($runIndex + 1 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 1] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+		$CommandAst.CommandElements[$runIndex + 1].Value
 	}
-	$shellname = if ($runshellIndex + 2 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runshellIndex + 2] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
-		$CommandAst.CommandElements[$runshellIndex + 2].Value
+	$username = if ($runIndex + 2 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 2] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+		$CommandAst.CommandElements[$runIndex + 2].Value
+	}
+	$partname = if ($runIndex + 3 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 3] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+		$CommandAst.CommandElements[$runIndex + 3].Value
+	}
+
+	# 补全类型。
+	# 如果当前参数是 'run' 之后的第一个参数，则补全类型。
+	if (($ArgIndex - $runIndex) -eq 1) {
+		return Get-FountPartTypeList | Where-Object { $_.StartsWith($WordToComplete) }
 	}
 
 	# 补全用户名。
-	# 如果当前参数是 'runshell' 之后的第一个参数，则补全用户名。
-	if (($ArgIndex - $runshellIndex) -eq 1) {
+	# 如果当前参数是 'run' 之后的第二个参数，则补全用户名。
+	if (($ArgIndex - $runIndex) -eq 2) {
 		return Get-FountUserList | Where-Object { $_.StartsWith($WordToComplete) }
 	}
 
-	# 补全 shellname。
-	# 如果当前参数是 'runshell' 之后的第二个参数，则补全 shellname。
-	if (($ArgIndex - $runshellIndex) -eq 2) {
-		return Get-FountShellListWithCompleter $username | Where-Object { $_.StartsWith($WordToComplete) }
+	# 补全 partname。
+	# 如果当前参数是 'run' 之后的第三个参数，则补全 partname。
+	if (($ArgIndex - $runIndex) -eq 3) {
+		return Get-FountPartListWithCompleter $username $parttype | Where-Object { $_.StartsWith($WordToComplete) }
 	}
 
 	# 委托给 shell 的 argument_completer.ps1 脚本处理后续参数。
 	# 获取 shell 目录的路径。
-	$shellDir = Get-FountPartDirectory -Username $username -parttype shells -partname $shellname
+	$shellDir = Get-FountPartDirectory -Username $username -parttype $parttype -partname $partname
 	# 如果 shell 目录存在，并且包含 argument_completer.ps1 脚本（-PathType Leaf 检查是否为文件），则执行该脚本。
 	if (Test-Path (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") -PathType Leaf) {
 		# 使用 '&' 调用操作符执行脚本，并传递必要的参数。
-		& (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") $username $WordToComplete $CommandAst $CursorPosition $runshellIndex $Argindex
+		& (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") $username $WordToComplete $CommandAst $CursorPosition $runIndex $Argindex
 	}
 }
 
@@ -69,24 +85,24 @@ function Invoke-RunshellCompletion {
 $ArgumentStructure = @{
 	Root = @{
 		# 根节点包含的参数。
-		Parameters = 'background', 'geneexe', 'init', 'keepalive', 'runshell', 'shutdown'
+		Parameters = 'background', 'geneexe', 'init', 'keepalive', 'run', 'shutdown'
 		# 'background' 参数的子参数。
 		background = @{
-			Parameters = 'geneexe', 'init', 'keepalive', 'runshell', 'shutdown'
+			Parameters = 'geneexe', 'init', 'keepalive', 'run', 'shutdown'
 			# 'geneexe' 参数的处理程序（仅限 Windows）。
 			geneexe    = { if ($IsWindows) { Get-ChildItem -Path "$($WordToComplete)*" -File | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'File', $_.FullName) } } }
 			init       = $null  # 没有补全逻辑。
 			# 'keepalive' 参数的子参数和处理程序。
-			keepalive  = @{ Parameters = 'debug', 'runshell'; debug = @{ Parameters = 'runshell'; runshell = ${function:Invoke-RunshellCompletion} }; runshell = ${function:Invoke-RunshellCompletion} }
-			# 'runshell' 参数的处理程序。
-			runshell   = ${function:Invoke-RunshellCompletion}
+			keepalive  = @{ Parameters = 'debug', 'run'; debug = @{ Parameters = 'run'; run = ${function:Invoke-RunshellCompletion} }; run = ${function:Invoke-RunshellCompletion} }
+			# 'run' 参数的处理程序。
+			run        = ${function:Invoke-RunshellCompletion}
 			shutdown   = $null
 		}
 		geneexe    = { if ($IsWindows) { Get-ChildItem -Path "$($WordToComplete)*" -File | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'File', $_.FullName) } } }
 		init       = $null
-		keepalive  = @{ Parameters = 'debug', 'runshell'; debug = @{ Parameters = 'runshell'; runshell = ${function:Invoke-RunshellCompletion} }; runshell = ${function:Invoke-RunshellCompletion} }
-		debug      = @{ Parameters = 'runshell'; runshell = ${function:Invoke-RunshellCompletion} }
-		runshell   = ${function:Invoke-RunshellCompletion}
+		keepalive  = @{ Parameters = 'debug', 'run'; debug = @{ Parameters = 'run'; run = ${function:Invoke-RunshellCompletion} }; run = ${function:Invoke-RunshellCompletion} }
+		debug      = @{ Parameters = 'run'; run = ${function:Invoke-RunshellCompletion} }
+		run        = ${function:Invoke-RunshellCompletion}
 		shutdown   = $null
 	}
 }

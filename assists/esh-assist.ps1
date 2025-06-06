@@ -40,7 +40,7 @@ function global:f(
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
 		pwd                      = "$pwd"
 	}
-	$result = Invoke-FountShell $Global:FountAssist.FountUsername 'shellassist' $requst
+	$result = Invoke-FountPart shells $Global:FountAssist.FountUsername 'shellassist' $requst
 	if ($result.chat_scoped_char_memorys) {
 		$Global:FountAssist.chat_scoped_char_memorys = $result.chat_scoped_char_memorys
 	}
