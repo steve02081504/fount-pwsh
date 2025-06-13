@@ -1,10 +1,4 @@
-﻿function Get-FountPartTypeList {
-	@(
-		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders'
-	)
-}
-
-# 获取具有补全脚本的 Part 列表。
+﻿# 获取具有补全脚本的 Part 列表。
 function Get-FountPartListWithCompleter {
 	param([string]$Username, [string]$parttype)
 	# 获取指定用户或所有用户的可用 Shell 列表。

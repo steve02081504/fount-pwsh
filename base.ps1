@@ -123,12 +123,23 @@ function Invoke-FountIPC(
 
 function Start-FountPart {
 	param(
+		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
 		[Parameter(Mandatory)]
 		[string]$PartType,
 
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
+		})]
 		[Parameter(Mandatory)]
 		[string]$UserName,
 
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$parttype = $fakeBoundParameters.parttype
+			$Username = $fakeBoundParameters.Username
+			$(Get-FountPartList -parttype $parttype -Username $Username).Where({ $_.StartsWith($WordToComplete) })
+		})]
 		[Parameter(Mandatory)]
 		[string]$PartName,
 
@@ -146,12 +157,23 @@ function Start-FountPart {
 
 function Invoke-FountPart {
 	param (
+		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
 		[Parameter(Mandatory)]
 		[string]$PartType,
 
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
+		})]
 		[Parameter(Mandatory)]
 		[string]$UserName,
 
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$parttype = $fakeBoundParameters.parttype
+			$Username = $fakeBoundParameters.Username
+			$(Get-FountPartList -parttype $parttype -Username $Username).Where({ $_.StartsWith($WordToComplete) })
+		})]
 		[Parameter(Mandatory)]
 		[string]$PartName,
 

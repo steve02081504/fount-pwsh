@@ -12,7 +12,16 @@
 $script:FountAssistInstalled = $false
 
 function Set-FountAssist(
+	[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
+		})]
 	$FountUsername,
+	[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$FountUsername = $fakeBoundParameters.FountUsername
+			$(Get-FountPartList -Username $FountUsername -parttype chars).Where({ $_.StartsWith($WordToComplete) })
+		})]
 	$AssistCharname
 ) {
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
@@ -27,7 +36,16 @@ function Set-FountAssist(
 }
 
 function Install-FountAssist(
+	[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
+		})]
 	$FountUsername,
+	[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$FountUsername = $fakeBoundParameters.FountUsername
+			$(Get-FountPartList -Username $FountUsername -parttype chars).Where({ $_.StartsWith($WordToComplete) })
+		})]
 	$AssistCharname
 ) {
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }

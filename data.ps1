@@ -14,14 +14,22 @@ function Get-FountUserList {
 	Get-ChildItem -Path "$(Get-FountDirectory)/data/users" -Directory | ForEach-Object Name
 }
 
-function Get-FountParts {
+function Get-FountPartTypeList {
 	@(
 		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders'
 	)
 }
 
 function Get-FountPartList {
-	param([string]$parttype, [string]$Username)
+	param(
+		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
+		[string]$parttype,
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
+		})]
+		[string]$Username
+	)
 	$fountDir = Get-FountDirectory
 	$isFile = $parttype -eq 'AIsources'
 	# 如果提供了用户名：
@@ -41,7 +49,22 @@ function Get-FountPartList {
 }
 
 function Get-FountPartDirectory {
-	param([string]$Username, [string]$parttype, [string]$partname)
+	param(
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
+		})]
+		[string]$Username,
+		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
+		[string]$parttype,
+		[ArgumentCompleter({
+			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+			$parttype = $fakeBoundParameters.parttype
+			$Username = $fakeBoundParameters.Username
+			$(Get-FountPartList -parttype $parttype -Username $Username).Where({ $_.StartsWith($WordToComplete) })
+		})]
+		[string]$partname
+	)
 	$fountDir = Get-FountDirectory
 	$isFile = $parttype -eq 'AIsources'
 	# 构造用户特定的 Shell 目录路径。

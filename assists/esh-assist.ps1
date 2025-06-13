@@ -35,6 +35,7 @@ function global:f(
 		shelltype                = "esh(like powershell)"
 		shellhistory             = $Global:FountAssist.shellhistory
 		command_now              = $expr_now
+		command_output           = $ans | Out-String -Width 65536
 		command_error            = $CommandErrors | Out-String -Width 65536
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys

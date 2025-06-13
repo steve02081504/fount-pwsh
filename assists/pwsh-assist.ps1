@@ -1,4 +1,5 @@
-﻿function global:f(
+﻿$PSDefaultParameterValues['Out-Default:OutVariable'] = 'fount_ans_capture_array'
+function global:f(
 	[ValidateScript({
 		(IsEnable $_) -or (IsDisable $_) -or (!$_)
 	})]
@@ -19,6 +20,7 @@
 		shelltype                = "powershell"
 		shellhistory             = $Global:FountAssist.shellhistory
 		command_now              = $Global:FountAssist.last_commaned.command
+		command_output           = $fount_ans_capture | Out-String -Width 65536
 		command_error            = $CommandErrors | Out-String -Width 65536
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
@@ -36,7 +38,7 @@
 		Write-Host
 	}
 	if ($Global:FountAssist.last_commaned) {
-		$Global:FountAssist.last_commaned.output = $ans | Out-String -Width 65536
+		$Global:FountAssist.last_commaned.output = $fount_ans_capture | Out-String -Width 65536
 		$Global:FountAssist.last_commaned.error = $requst.command_error
 		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
 		$Global:FountAssist.last_commaned = $null
@@ -100,9 +102,11 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
 	$line = $null
 	$cursor = $null
 	[Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+	$global:fount_ans_capture = $($global:fount_ans_capture_array)
+	$global:fount_ans_capture_array = [System.Collections.ArrayList]@()
 
 	if ($Global:FountAssist.last_commaned) {
-		$Global:FountAssist.last_commaned.output = $ans | Out-String -Width 65536
+		$Global:FountAssist.last_commaned.output = $fount_ans_capture | Out-String -Width 65536
 		$Global:FountAssist.last_commaned.error = $Error | Select-Object -SkipLast $Global:FountAssist.HistoryErrorCount | Out-String -Width 65536
 		$Global:FountAssist.shellhistory.Add($Global:FountAssist.last_commaned) | Out-Null
 	}
