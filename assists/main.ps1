@@ -24,6 +24,8 @@ function Set-FountAssist(
 		})]
 	$AssistCharname
 ) {
+	$FountUsername = Get-FountUserList | Where-Object { $_ -eq $FountUsername }
+	$AssistCharname = Get-FountPartList -parttype chars -Username $UserName | Where-Object { $_ -eq $AssistCharname }
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
 	if (!(Test-FountRunning)) {
@@ -48,6 +50,8 @@ function Install-FountAssist(
 		})]
 	$AssistCharname
 ) {
+	$FountUsername = Get-FountUserList | Where-Object { $_ -eq $FountUsername }
+	$AssistCharname = Get-FountPartList -parttype chars -Username $UserName | Where-Object { $_ -eq $AssistCharname }
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
 	if ($EshellUI) {
