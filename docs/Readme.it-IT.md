@@ -63,7 +63,7 @@ L'assistente fount apparirà automaticamente nelle seguenti situazioni:
 
 ## Disabilita/Abilita Assistente Automatico
 
-You can use the `f` command to easily disable or enable the automatic assistant feature:
+Puoi usare il comando `f` per disabilitare o abilitare facilmente la funzione di assistente automatico:
 
 ```powershell
 f 0    # Disabilita assistente automatico (possibile anche con f false / f no / f n / f disable / f unset / f off ecc.)
