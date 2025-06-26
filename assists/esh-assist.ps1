@@ -40,6 +40,7 @@ function global:f(
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
 		pwd                      = "$pwd"
+		screen                   = Get-ScreenBufferAsText
 	}
 	$result = Invoke-FountPart shells $Global:FountAssist.FountUsername 'shellassist' $requst
 	if ($result.chat_scoped_char_memorys) {

@@ -1,4 +1,21 @@
-﻿$PSDefaultParameterValues['Out-Default:OutVariable'] = 'fount_ans_capture_array'
+﻿function Script:Get-ScreenBufferAsText {
+    $stringBuilder = [System.Text.StringBuilder]::new()
+    $rawUI = $Host.UI.RawUI
+    $captureWidth = $rawUI.BufferSize.Width
+    $captureHeight = $rawUI.CursorPosition.Y
+    if ($captureHeight -le 0) { return "" }
+    $rectangle = [System.Management.Automation.Host.Rectangle]::new(0, 0, $captureWidth, $captureHeight)
+    $buffer = $rawUI.GetBufferContents($rectangle)
+    for ($y = 0; $y -lt $captureHeight; $y++) {
+        $lineContent = ""
+        for ($x = 0; $x -lt $captureWidth; $x++) {
+            $lineContent += $buffer[$y, $x].Character
+        }
+        $stringBuilder.AppendLine($lineContent.TrimEnd()) | Out-Null
+    }
+    return $stringBuilder.ToString().TrimEnd() -replace "`0", ""
+}
+$PSDefaultParameterValues['Out-Default:OutVariable'] = 'fount_ans_capture_array'
 function global:f(
 	[ValidateScript({
 		(IsEnable $_) -or (IsDisable $_) -or (!$_)
@@ -25,6 +42,7 @@ function global:f(
 		rejected_commands        = $Global:FountAssist.rejected_commands
 		chat_scoped_char_memorys = $Global:FountAssist.chat_scoped_char_memorys
 		pwd                      = "$pwd"
+		screen                   = Get-ScreenBufferAsText
 	}
 	$result = Invoke-FountPart shells $Global:FountAssist.FountUsername 'shellassist' $requst
 	if ($result.chat_scoped_char_memorys) {
