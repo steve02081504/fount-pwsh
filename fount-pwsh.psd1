@@ -128,7 +128,7 @@ Allows you:
 			ProjectUri = 'https://github.com/steve02081504/fount-pwsh'
 
 			# A URL to an icon representing this module.
-			IconUri = 'https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/src/pages/favicon.ico'
+			IconUri = 'https://raw.githubusercontent.com/steve02081504/fount/refs/heads/master/imgs/icon.ico'
 
 			# ReleaseNotes of this module
 			# ReleaseNotes = ''
