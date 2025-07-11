@@ -92,7 +92,7 @@ function global:f(
 					[console]::TreatControlCAsInput = $false
 					[Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory($result.recommend_command)
 					$StartExecutionTime = Get-Date
-					Invoke-Expression $result.recommend_command | Out-String | Write-Host
+					$(Invoke-Expression $result.recommend_command | Out-Default) *>&1 | Out-Host
 					$EndExecutionTime = Get-Date
 					[PSCustomObject](@{
 						CommandLine        = $result.recommend_command
