@@ -79,10 +79,10 @@ function Invoke-RunshellCompletion {
 $ArgumentStructure = @{
 	Root = @{
 		# 根节点包含的参数。
-		Parameters = 'background', 'geneexe', 'init', 'keepalive', 'run', 'shutdown'
+		Parameters = 'background', 'geneexe', 'init', 'keepalive', 'run', 'shutdown', 'reboot'
 		# 'background' 参数的子参数。
 		background = @{
-			Parameters = 'geneexe', 'init', 'keepalive', 'run', 'shutdown'
+			Parameters = 'geneexe', 'init', 'keepalive', 'run', 'shutdown', 'reboot'
 			# 'geneexe' 参数的处理程序（仅限 Windows）。
 			geneexe    = { if ($IsWindows) { Get-ChildItem -Path "$($WordToComplete)*" -File | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'File', $_.FullName) } } }
 			init       = $null  # 没有补全逻辑。
@@ -91,6 +91,7 @@ $ArgumentStructure = @{
 			# 'run' 参数的处理程序。
 			run        = ${function:Invoke-RunshellCompletion}
 			shutdown   = $null
+			reboot     = $null
 		}
 		geneexe    = { if ($IsWindows) { Get-ChildItem -Path "$($WordToComplete)*" -File | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_.FullName, $_.Name, 'File', $_.FullName) } } }
 		init       = $null
@@ -98,6 +99,7 @@ $ArgumentStructure = @{
 		debug      = @{ Parameters = 'run'; run = ${function:Invoke-RunshellCompletion} }
 		run        = ${function:Invoke-RunshellCompletion}
 		shutdown   = $null
+		reboot     = $null
 	}
 }
 
