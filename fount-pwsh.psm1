@@ -21,7 +21,6 @@ Export-ModuleMember -Function @(
 
 	"Get-FountDirectory"
 	"Get-FountUserList"
-	"Get-FountPartTypeList"
 	"Get-FountPartList"
 	"Get-FountPartDirectory"
 ) -Variable @(

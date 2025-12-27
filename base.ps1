@@ -123,10 +123,6 @@ function Invoke-FountIPC(
 
 function Start-FountPart {
 	param(
-		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
-		[Parameter(Mandatory)]
-		[string]$PartType,
-
 		[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
 			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
@@ -136,31 +132,32 @@ function Start-FountPart {
 
 		[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
-			$parttype = $fakeBoundParameters.parttype
-			$Username = $fakeBoundParameters.Username
-			$(Get-FountPartList -parttype $parttype -Username $Username).Where({ $_.StartsWith($WordToComplete) })
+			$username = $fakeBoundParameters['UserName']
+			$parts = ("/$wordToComplete" -split '/', 2)[1] -split '/', 2
+			$parttype = $parts[0] -replace '^/', ''
+			$partnamePrefix = if ($parts.Count -gt 1) { $parts[1] } else { '' }
+			$partList = Get-FountPartList -Username $username -PartPath $parttype | Where-Object { $_.StartsWith($partnamePrefix) }
+			$partList | ForEach-Object {
+				$fullPath = ("$parttype/$_" -replace '^/', '')
+				[System.Management.Automation.CompletionResult]::new($fullPath, $_, 'ParameterValue', $fullPath)
+			}
 		})]
 		[Parameter(Mandatory)]
-		[string]$PartName,
+		[string]$PartPath,
 
 		[Parameter(ValueFromRemainingArguments)]
 		[array]$Arguments
 	)
 
 	Invoke-FountIPC -Type "runpart" -Data @{
-		username  = $UserName
-		parttype  = $PartType
-		partname  = $PartName
-		args      = $Arguments
+		username = $UserName
+		partpath = $PartPath
+		args     = $Arguments
 	}
 }
 
 function Invoke-FountPart {
 	param (
-		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
-		[Parameter(Mandatory)]
-		[string]$PartType,
-
 		[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
 			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
@@ -170,21 +167,26 @@ function Invoke-FountPart {
 
 		[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
-			$parttype = $fakeBoundParameters.parttype
-			$Username = $fakeBoundParameters.Username
-			$(Get-FountPartList -parttype $parttype -Username $Username).Where({ $_.StartsWith($WordToComplete) })
+			$username = $fakeBoundParameters['UserName']
+			$parts = ("/$wordToComplete" -split '/', 2)[1] -split '/', 2
+			$parttype = $parts[0] -replace '^/', ''
+			$partnamePrefix = if ($parts.Count -gt 1) { $parts[1] } else { '' }
+			$partList = Get-FountPartList -Username $username -PartPath $parttype | Where-Object { $_.StartsWith($partnamePrefix) }
+			$partList | ForEach-Object {
+				$fullPath = ("$parttype/$_" -replace '^/', '')
+				[System.Management.Automation.CompletionResult]::new($fullPath, $_, 'ParameterValue', $fullPath)
+			}
 		})]
 		[Parameter(Mandatory)]
-		[string]$PartName,
+		[string]$PartPath,
 
 		$Data
 	)
 
 	Invoke-FountIPC -Type "invokepart" -Data @{
-		username  = $UserName
-		parttype  = $PartType
-		partname  = $PartName
-		data      = $Data
+		username = $UserName
+		partpath = $PartPath
+		data     = $Data
 	}
 }
 

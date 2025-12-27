@@ -1,12 +1,16 @@
-﻿# 获取具有补全脚本的 Part 列表。
+﻿if ($PSEdition -eq "Desktop") {
+	try { $IsWindows = $true } catch {}
+}
+
+# 获取具有补全脚本的 Part 列表。
 function Get-FountPartListWithCompleter {
-	param([string]$Username, [string]$parttype)
-	# 获取指定用户或所有用户的可用 Shell 列表。
-	Get-FountPartList -parttype $parttype -Username $Username |
-	# 筛选出存在 argument_completer.ps1 脚本的 Shell。
+	param([string]$Username, [string]$PartPath)
+	# 获取指定用户或所有用户的可用 Part 列表。
+	Get-FountPartList -PartPath $PartPath -Username $Username |
+	# 筛选出存在 argument_completer.ps1 脚本的 Part。
 	Where-Object {
-		$shellDir = Get-FountPartDirectory -Username $Username -parttype $parttype -partname $_
-		Test-Path (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") -PathType Leaf
+		$partDir = Get-FountPartDirectory -Username $Username -PartPath "$PartPath/$_"
+		Test-Path (Join-Path -Path $partDir -ChildPath "argument_completer.ps1") -PathType Leaf
 	}
 }
 
@@ -32,46 +36,46 @@ function Invoke-RunshellCompletion {
 		[int]$Argindex  # 当前参数在 CommandAst 中的索引。
 	)
 
-	# 提取用户名和 shellname，处理它们可能还不存在的情况。
-	# $runIndex + 1 是parttype的可能位置。
-	# $runIndex + 2 是用户名的可能位置。
-	# $runIndex + 3 是 partname 的可能位置。
+	# 提取用户名和 partpath，处理它们可能还不存在的情况。
+	# $runIndex + 1 是用户名的可能位置。
+	# $runIndex + 2 是 partpath 的可能位置。
 	# 如果索引在 CommandAst 的范围内，并且元素是字符串常量，则提取其值。
-	$parttype = if ($runIndex + 1 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 1] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+	$username = if ($runIndex + 1 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 1] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
 		$CommandAst.CommandElements[$runIndex + 1].Value
 	}
-	$username = if ($runIndex + 2 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 2] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+	$partpath = if ($runIndex + 2 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 2] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
 		$CommandAst.CommandElements[$runIndex + 2].Value
-	}
-	$partname = if ($runIndex + 3 -lt $CommandAst.CommandElements.Count -and $CommandAst.CommandElements[$runIndex + 3] -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
-		$CommandAst.CommandElements[$runIndex + 3].Value
-	}
-
-	# 补全类型。
-	# 如果当前参数是 'run' 之后的第一个参数，则补全类型。
-	if (($ArgIndex - $runIndex) -eq 1) {
-		return Get-FountPartTypeList | Where-Object { $_.StartsWith($WordToComplete) }
 	}
 
 	# 补全用户名。
-	# 如果当前参数是 'run' 之后的第二个参数，则补全用户名。
-	if (($ArgIndex - $runIndex) -eq 2) {
+	# 如果当前参数是 'run' 之后的第一个参数，则补全用户名。
+	if (($ArgIndex - $runIndex) -eq 1) {
 		return Get-FountUserList | Where-Object { $_.StartsWith($WordToComplete) }
 	}
 
-	# 补全 partname。
-	# 如果当前参数是 'run' 之后的第三个参数，则补全 partname。
-	if (($ArgIndex - $runIndex) -eq 3) {
-		return Get-FountPartListWithCompleter $username $parttype | Where-Object { $_.StartsWith($WordToComplete) }
+	# 补全 partpath。
+	# 如果当前参数是 'run' 之后的第二个参数，则补全 partpath。
+	if (($ArgIndex - $runIndex) -eq 2) {
+		$parts = ("/$WordToComplete" -split '/', 2)[1] -split '/', 2
+		$parttype = $parts[0] -replace '^/', ''
+		$partnamePrefix = if ($parts.Count -gt 1) { $parts[1] } else { '' }
+		$partList = Get-FountPartList -Username $username -PartPath $parttype | Where-Object { $_.StartsWith($partnamePrefix) }
+		$partList | ForEach-Object {
+			$fullPath = ("$parttype/$_" -replace '^/', '')
+			[System.Management.Automation.CompletionResult]::new($fullPath, $_, 'ParameterValue', $fullPath)
+		}
+		return
 	}
 
-	# 委托给 shell 的 argument_completer.ps1 脚本处理后续参数。
-	# 获取 shell 目录的路径。
-	$shellDir = Get-FountPartDirectory -Username $username -parttype $parttype -partname $partname
-	# 如果 shell 目录存在，并且包含 argument_completer.ps1 脚本（-PathType Leaf 检查是否为文件），则执行该脚本。
-	if (Test-Path (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") -PathType Leaf) {
-		# 使用 '&' 调用操作符执行脚本，并传递必要的参数。
-		& (Join-Path -Path $shellDir -ChildPath "argument_completer.ps1") $username $WordToComplete $CommandAst $CursorPosition $runIndex $Argindex
+	# 委托给 part 的 argument_completer.ps1 脚本处理后续参数。
+	# 获取 part 目录的路径。
+	if ($partpath) {
+		$partDir = Get-FountPartDirectory -Username $username -PartPath $partpath
+		# 如果 part 目录存在，并且包含 argument_completer.ps1 脚本，则执行该脚本。
+		if ($partDir -and (Test-Path (Join-Path -Path $partDir -ChildPath "argument_completer.ps1") -PathType Leaf)) {
+			# 使用 '&' 调用操作符执行脚本，并传递必要的参数。
+			& (Join-Path -Path $partDir -ChildPath "argument_completer.ps1") $username $WordToComplete $CommandAst $CursorPosition $runIndex $Argindex
+		}
 	}
 }
 

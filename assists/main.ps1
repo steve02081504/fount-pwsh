@@ -20,12 +20,12 @@ function Set-FountAssist(
 	[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
 			$FountUsername = $fakeBoundParameters.FountUsername
-			$(Get-FountPartList -Username $FountUsername -parttype chars).Where({ $_.StartsWith($WordToComplete) })
+			$(Get-FountPartList -Username $FountUsername -PartPath chars).Where({ $_.StartsWith($WordToComplete) })
 		})]
 	$AssistCharname
 ) {
 	$FountUsername = Get-FountUserList | Where-Object { $_ -eq $FountUsername }
-	$AssistCharname = Get-FountPartList -parttype chars -Username $FountUsername | Where-Object { $_ -eq $AssistCharname }
+	$AssistCharname = Get-FountPartList -PartPath chars -Username $FountUsername | Where-Object { $_ -eq $AssistCharname }
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
 	if (!(Test-FountRunning)) {
@@ -46,12 +46,12 @@ function Install-FountAssist(
 	[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
 			$FountUsername = $fakeBoundParameters.FountUsername
-			$(Get-FountPartList -Username $FountUsername -parttype chars).Where({ $_.StartsWith($WordToComplete) })
+			$(Get-FountPartList -Username $FountUsername -PartPath chars).Where({ $_.StartsWith($WordToComplete) })
 		})]
 	$AssistCharname
 ) {
 	$FountUsername = Get-FountUserList | Where-Object { $_ -eq $FountUsername }
-	$AssistCharname = Get-FountPartList -parttype chars -Username $FountUsername | Where-Object { $_ -eq $AssistCharname }
+	$AssistCharname = Get-FountPartList -PartPath chars -Username $FountUsername | Where-Object { $_ -eq $AssistCharname }
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
 	if ($EshellUI) {

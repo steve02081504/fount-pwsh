@@ -87,7 +87,6 @@ Allows you:
 
 		"Get-FountDirectory"
 		"Get-FountUserList"
-		"Get-FountPartTypeList"
 		"Get-FountPartList"
 		"Get-FountPartDirectory"
 	)

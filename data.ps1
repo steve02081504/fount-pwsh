@@ -14,37 +14,49 @@ function Get-FountUserList {
 	Get-ChildItem -Path "$(Get-FountDirectory)/data/users" -Directory | ForEach-Object Name
 }
 
-function Get-FountPartTypeList {
-	@(
-		'shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders'
-	)
-}
-
 function Get-FountPartList {
 	param(
-		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
-		[string]$parttype,
 		[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
 			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
 		})]
-		[string]$Username
+		[string]$Username,
+		[string]$PartPath = ''
 	)
 	$fountDir = Get-FountDirectory
-	$isFile = $parttype -eq 'AIsources'
-	# 如果提供了用户名：
-	$userParts = if ($Username) {
-		Get-ChildItem -Path "$fountDir/data/users/$Username/$parttype" -Directory:$(!$isFile) -File:$isFile -ErrorAction SilentlyContinue
+
+	# 构建搜索路径
+	# 如果是顶级目录（PartPath 为空），扫描 parts 目录获取顶级类型
+	if ([string]::IsNullOrEmpty($PartPath)) {
+		$userPartDir = if ($Username) { "$fountDir/data/users/$Username" } else { $null }
+		$publicPartDir = "$fountDir/src/public/parts"
 	}
-	$publicParts = Get-ChildItem -Path "$fountDir/src/public/$parttype" -Directory:$(!$isFile) -File:$isFile -ErrorAction SilentlyContinue
-	.{ $userParts; $publicParts } | Where-Object {
-		if ($isFile) { $_ }
-		else {
-			Test-Path $(Join-Path -Path $_.FullName -ChildPath "main.mjs") -PathType Leaf
-		}
+	else {
+		$userPartDir = if ($Username) { "$fountDir/data/users/$Username/$PartPath" } else { $null }
+		$publicPartDir = "$fountDir/src/public/parts/$PartPath"
+	}
+
+	$partlist = @()
+
+	# 扫描用户目录
+	if ($userPartDir -and (Test-Path $userPartDir -PathType Container)) {
+		$userParts = Get-ChildItem -Path $userPartDir -Directory -ErrorAction SilentlyContinue
+		$partlist += $userParts
+	}
+
+	# 扫描公共目录
+	if (Test-Path $publicPartDir -PathType Container) {
+		$publicParts = Get-ChildItem -Path $publicPartDir -Directory -ErrorAction SilentlyContinue
+		$currentNames = New-Object System.Collections.Generic.HashSet[string]
+		$partlist | ForEach-Object { $currentNames.Add($_.Name) | Out-Null }
+		$publicParts | Where-Object { -not $currentNames.Contains($_.Name) } | ForEach-Object { $partlist += $_ }
+	}
+
+	# 过滤并返回结果（检查 fount.json）
+	$partlist | Where-Object {
+		Test-Path $(Join-Path -Path $_.FullName -ChildPath "fount.json") -PathType Leaf
 	} | ForEach-Object {
-		if($isFile) { $_.BaseName }
-		else { $_.Name }
+		$_.Name
 	} | Sort-Object -Unique
 }
 
@@ -55,37 +67,31 @@ function Get-FountPartDirectory {
 			$(Get-FountUserList).Where({ $_.StartsWith($WordToComplete) })
 		})]
 		[string]$Username,
-		[ValidateSet('shells', 'chars', 'personas', 'worlds', 'AIsources', 'AIsourceGenerators', 'ImportHanlders')]
-		[string]$parttype,
 		[ArgumentCompleter({
 			param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
-			$parttype = $fakeBoundParameters.parttype
-			$Username = $fakeBoundParameters.Username
-			$(Get-FountPartList -parttype $parttype -Username $Username).Where({ $_.StartsWith($WordToComplete) })
+			$username = $fakeBoundParameters['Username']
+			$parts = ("/$wordToComplete" -split '/', 2)[1] -split '/', 2
+			$parttype = $parts[0] -replace '^/', ''
+			$partnamePrefix = if ($parts.Count -gt 1) { $parts[1] } else { '' }
+			$partList = Get-FountPartList -Username $username -PartPath $parttype | Where-Object { $_.StartsWith($partnamePrefix) }
+			$partList | ForEach-Object {
+				$fullPath = ("$parttype/$_" -replace '^/', '')
+				[System.Management.Automation.CompletionResult]::new($fullPath, $_, 'ParameterValue', $fullPath)
+			}
 		})]
-		[string]$partname
+		[Parameter(Mandatory)]
+		[string]$PartPath
 	)
 	$fountDir = Get-FountDirectory
-	$isFile = $parttype -eq 'AIsources'
-	# 构造用户特定的 Shell 目录路径。
-	$userPath = "$fountDir/data/users/$Username/$parttype/$partname"
-	# 构造公共 Shell 目录路径。
-	$publicPath = "$fountDir/src/public/$parttype/$partname"
-	# 优先返回用户特定的 Shell 目录路径（如果存在）。
-	if ($isFile) {
-		function Test-PartExist($path) {
-			Test-Path $path -PathType Leaf
-		}
-	}
-	else {
-		function Test-PartExist($path) {
-			Test-Path "$path/main.mjs" -PathType Leaf
-		}
-	}
-	if (Test-PartExist $userPath) {
+	# 构造用户特定的 Part 目录路径。
+	$userPath = "$fountDir/data/users/$Username/$PartPath"
+	# 构造公共 Part 目录路径。
+	$publicPath = "$fountDir/src/public/parts/$PartPath"
+	# 优先返回用户特定的 Part 目录路径（如果存在，检查 fount.json）。
+	if (Test-Path "$userPath/fount.json" -PathType Leaf) {
 		$userPath
 	}
-	elseif (Test-PartExist $publicPath) {
+	elseif (Test-Path "$publicPath/fount.json" -PathType Leaf) {
 		$publicPath
 	}
 }
