@@ -29,7 +29,7 @@ function Set-FountAssist(
 	if ($AssistCharname) { $Global:FountAssist.AssistCharname = $AssistCharname }
 	if ($FountUsername) { $Global:FountAssist.FountUsername = $FountUsername }
 	if (!(Test-FountRunning)) {
-		Start-Fount background keepalive runshell $Global:FountAssist.FountUsername preload chars $Global:FountAssist.AssistCharname
+		Start-Fount background keepalive run $Global:FountAssist.FountUsername 'shells/preload' "chars/$($Global:FountAssist.AssistCharname)"
 	}
 	if ($script:FountAssistInstalled) { return }
 	if ($EshellUI) { . $PSScriptRoot/esh-assist.ps1 }
